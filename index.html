@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>국방복지회원증</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .container {
+      width: 350px;
+      margin: auto;
+      position: relative;
+    }
+    .back-arrow {
+      position: absolute;
+      top: 25px;
+      left: 80px;
+      font-size: 30px;
+      transform: rotate(135deg);
+    }
+    .profile-photo {
+      margin-top: 60px;
+      width: 138px;
+      height: 178px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .relation {
+      font-size: 14px;
+      margin-top: 2px;
+      color: #222;
+    }
+    .button {
+      background-color: #3a00d1;
+      color: white;
+      padding: 8px 30px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: inline-block;
+      margin-top: 15px;
+    }
+    .qr {
+      margin-top: 15px;
+      width: 80px;
+    }
+    .datetime {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .time {
+      color: red;
+      font-weight: bold;
+    }
+    .features {
+      text-align: left;
+      margin-left: 80px;
+      margin-top: 15px;
+    }
+    .features p {
+      font-size: 16px;
+      color: #7a5be7;
+      margin: 4px 0;
+    }
+    .footer {
+      font-size: 12px;
+      color: #7a5be7;
+      margin-top: 20px;
+    }
+    .logo {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 100px;
+      opacity: 0.2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back-arrow">↩</div>
+    <img src="dd.jpg" alt="프로필 사진" class="profile-photo">
+    <div class="name">정홍주</div>
+    <div class="relation">정영재의 녀</div>
+    <div class="button">승인완료</div>
+    <div><img src="qr.png" class="qr" alt="QR 코드"></div>
+    <div class="datetime">
+      <span id="date"></span> <span id="time" class="time"></span>
+    </div>
+    <div class="features">
+      <p>ㆍ마트 이용 가능</p>
+      <p>ㆍ호텔콘도 이용 가능</p>
+    </div>
+    <div class="footer">
+      국방복지 회원임을 증명합니다.<br>
+      ※캡쳐된 화면은 사용이 불가능합니다.
+    </div>
+    <img src="logo_corner_final.png" class="logo" alt="국방마크">
+  </div>
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const date = now.getFullYear() + '년 ' + String(now.getMonth() + 1).padStart(2, '0') + '월 ' + String(now.getDate()).padStart(2, '0') + '일';
+      const time = String(now.getHours()).padStart(2, '0') + ':' +
+                   String(now.getMinutes()).padStart(2, '0') + ':' +
+                   String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('date').textContent = date;
+      document.getElementById('time').textContent = time;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
+</body>
+</html>
