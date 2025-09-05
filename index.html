@@ -1,124 +1,237 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>국방복지회원증</title>
   <style>
+    :root {
+      --primary: #5b00eb;
+      --muted: #8a84a0;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: "Arial", sans-serif;
-      text-align: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif;
       margin: 0;
       padding: 0;
       background: #fff;
+      text-align: center;
     }
-    .container {
-      width: 350px;
-      margin: auto;
-      position: relative;
-    }
-    .back-arrow {
-      position: absolute;
-      top: 25px;
-      left: 80px;
-      font-size: 30px;
-      transform: rotate(135deg);
-    }
-    .profile-photo {
-      margin-top: 60px;
-      width: 138px;
-      height: 178px;
+    .container { padding: 20px; position: relative; min-height: 100vh; }
+    .photo {
+      width: 100%;
+      max-width: 180px;
+      aspect-ratio: 180/220;
+      height: auto;
       object-fit: cover;
-      border-radius: 2px;
+      margin: 10px auto;
+      border-radius: 8px;
+      display: block;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .name {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .relation {
-      font-size: 14px;
-      margin-top: 2px;
-      color: #222;
-    }
-    .button {
-      background-color: #3a00d1;
+    .name { font-size: 20px; font-weight: 800; }
+    .sub-name { font-size: 16px; margin-bottom: 10px; }
+    .approved {
+      background-color: var(--primary);
       color: white;
-      padding: 8px 30px;
-      border-radius: 20px;
-      font-size: 14px;
-      display: inline-block;
-      margin-top: 15px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      width: 200px;
+      margin: 0 auto 15px;
+      font-weight: 800;
     }
-    .qr {
-      margin-top: 15px;
-      width: 80px;
+    .qr-container { width: 120px; height: 120px; margin: 0 auto 15px; }
+    .qr { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .date-time { font-size: 16px; margin: 10px 0; }
+    .time { color: red; font-weight: 800; }
+    .info { color: var(--primary); font-weight: 800; font-size: 18px; margin: 8px 0; }
+    .notice { color: var(--muted); font-size: 14px; margin-top: 10px; }
+    .logo { position: fixed; bottom: 8px; right: 8px; opacity: 0.08; width: 200px; max-width: 40vw; pointer-events: none; }
+    #clock-display { position: absolute; top: 8px; right: 12px; font-size: 14px; }
+
+    /* 편집 패널 */
+    .editor-toggle {
+      position: fixed; left: 12px; bottom: 12px; z-index: 20; border: 0; background: var(--primary); color: #fff;
+      padding: 10px 14px; border-radius: 999px; font-weight: 700; box-shadow: 0 6px 18px rgba(91,0,235,0.25);
     }
-    .datetime {
-      margin-top: 10px;
-      font-size: 14px;
+    .panel {
+      position: fixed; left: 12px; bottom: 64px; width: min(92vw, 360px); background: #fff; border: 1px solid #eee; border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12); text-align: left; padding: 14px; z-index: 20; display: none;
     }
-    .time {
-      color: red;
-      font-weight: bold;
+    .panel.open { display: block; }
+    .panel h2 { margin: 4px 0 8px; font-size: 16px; }
+    .field { display: grid; gap: 6px; margin: 8px 0 12px; }
+    .field label { font-size: 12px; color: #333; font-weight: 700; }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid #e5e5e5; font-size: 14px;
     }
-    .features {
-      text-align: left;
-      margin-left: 80px;
-      margin-top: 15px;
-    }
-    .features p {
-      font-size: 16px;
-      color: #7a5be7;
-      margin: 4px 0;
-    }
-    .footer {
-      font-size: 12px;
-      color: #7a5be7;
-      margin-top: 20px;
-    }
-    .logo {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: 100px;
-      opacity: 0.2;
-    }
+    .tips { font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="back-arrow">↩</div>
-    <img src="dd.jpg" alt="프로필 사진" class="profile-photo">
-    <div class="name">정홍주</div>
-    <div class="relation">정영재의 녀</div>
-    <div class="button">승인완료</div>
-    <div><img src="qr.png" class="qr" alt="QR 코드"></div>
-    <div class="datetime">
-      <span id="date"></span> <span id="time" class="time"></span>
+    <div id="clock-display">--:-- 🔇</div>
+
+    <img src="KakaoTalk_20250905_105804025.jpg" alt="증명 사진" class="photo" id="profile-photo" />
+
+    <div class="name" id="name">정종후</div>
+    <div class="sub-name" id="subName">정영재의 자</div>
+    <div class="approved" id="status">승인완료</div>
+
+    <div class="qr-container">
+      <img id="qr" alt="QR Code" class="qr"
+        src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=%EC%8A%B9%EC%9D%B8%EC%99%84%EB%A3%8C"/>
     </div>
-    <div class="features">
-      <p>ㆍ마트 이용 가능</p>
-      <p>ㆍ호텔콘도 이용 가능</p>
+
+    <div class="date-time">
+      <span id="date"></span>
+      <span class="time" id="time"></span>
     </div>
-    <div class="footer">
-      국방복지 회원임을 증명합니다.<br>
+
+    <div id="infoList">
+      <div class="info">ㆍ마트 이용 가능</div>
+      <div class="info">ㆍ호텔콘도 이용 가능</div>
+    </div>
+
+    <div class="notice">
+      국방복지 회원임을 증명합니다.<br />
       ※캡쳐된 화면은 사용이 불가능합니다.
     </div>
-    <img src="logo_corner_final.png" class="logo" alt="국방마크">
   </div>
+
+  <img src="logo.png" alt="로고" class="logo" />
+
+  <!-- 편집 패널 -->
+  <button class="editor-toggle" id="toggleEditor">편집</button>
+  <div class="panel" id="editorPanel" role="dialog" aria-label="입력 패널">
+    <h2>내용 입력</h2>
+    <div class="field">
+      <label for="inpName">이름</label>
+      <input id="inpName" placeholder="예: 홍길동" />
+    </div>
+    <div class="field">
+      <label for="inpSub">보조 라벨</label>
+      <input id="inpSub" placeholder="예: 홍판서의 자" />
+    </div>
+    <div class="field">
+      <label for="inpStatus">상태(상단 보라색 배지)</label>
+      <input id="inpStatus" placeholder="예: 승인완료" />
+    </div>
+    <div class="field">
+      <label for="inpQR">QR 데이터</label>
+      <input id="inpQR" placeholder="예: 승인완료" />
+      <div class="tips">텍스트가 그대로 QR로 인코딩됩니다.</div>
+    </div>
+    <div class="field">
+      <label for="inpInfo">안내문 (줄바꿈으로 구분)</label>
+      <textarea id="inpInfo" rows="3" placeholder="예:\nㆍ마트 이용 가능\nㆍ호텔콘도 이용 가능"></textarea>
+    </div>
+    <div class="field">
+      <label for="inpPhoto">증명사진 (파일 선택)</label>
+      <input id="inpPhoto" type="file" accept="image/*" />
+      <div class="tips">이미지는 기기 내에서만 사용되며 업로드되지 않습니다.</div>
+    </div>
+    <div class="field">
+      <label for="inpLogo">로고 (파일 선택, 선택사항)</label>
+      <input id="inpLogo" type="file" accept="image/*" />
+    </div>
+  </div>
+
   <script>
-    function updateTime() {
+    // Asia/Seoul 고정 시계
+    function updateDateTime() {
       const now = new Date();
-      const date = now.getFullYear() + '년 ' + String(now.getMonth() + 1).padStart(2, '0') + '월 ' + String(now.getDate()).padStart(2, '0') + '일';
-      const time = String(now.getHours()).padStart(2, '0') + ':' +
-                   String(now.getMinutes()).padStart(2, '0') + ':' +
-                   String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('date').textContent = date;
-      document.getElementById('time').textContent = time;
+      const fmtDate = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);
+      const fmtTime = new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(now);
+
+      const y = fmtDate.find(p => p.type === 'year').value;
+      const m = fmtDate.find(p => p.type === 'month').value;
+      const d = fmtDate.find(p => p.type === 'day').value;
+      const hh = fmtTime.find(p => p.type === 'hour').value;
+      const mm = fmtTime.find(p => p.type === 'minute').value;
+      const ss = fmtTime.find(p => p.type === 'second').value;
+
+      document.getElementById('date').textContent = `${y}년 ${m}월 ${d}일`;
+      document.getElementById('time').textContent = `${hh}:${mm}:${ss}`;
+      document.getElementById('clock-display').textContent = `${hh}:${mm} 🔇`;
     }
-    setInterval(updateTime, 1000);
-    updateTime();
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // URL 매개변수 -> 값 채우기
+    const params = new URLSearchParams(location.search);
+    function applyParams() {
+      const name = params.get('name');
+      const sub = params.get('sub');
+      const status = params.get('status');
+      const qr = params.get('qr');
+      const info = params.get('info'); // 항목을 | 로 구분
+      const photo = params.get('photo'); // 이미지 URL
+      const logo = params.get('logo');
+
+      if (name) document.getElementById('name').textContent = name;
+      if (sub) document.getElementById('subName').textContent = sub;
+      if (status) document.getElementById('status').textContent = status;
+      if (qr) setQR(qr);
+      if (photo) document.getElementById('profile-photo').src = photo;
+      if (logo) document.querySelector('.logo').src = logo;
+      if (info) {
+        const list = document.getElementById('infoList');
+        list.innerHTML = '';
+        info.split('|').forEach(line => {
+          if (!line.trim()) return;
+          const div = document.createElement('div');
+          div.className = 'info';
+          div.textContent = line;
+          list.appendChild(div);
+        });
+      }
+    }
+
+    function setQR(text) {
+      const enc = encodeURIComponent(text);
+      document.getElementById('qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${enc}`;
+    }
+
+    applyParams();
+
+    // 편집 패널 제어 및 미리보기 반영
+    const toggleBtn = document.getElementById('toggleEditor');
+    const panel = document.getElementById('editorPanel');
+    toggleBtn.addEventListener('click', () => panel.classList.toggle('open'));
+
+    const $ = (id) => document.getElementById(id);
+    $('inpName').addEventListener('input', e => { $('name').textContent = e.target.value || ' '; });
+    $('inpSub').addEventListener('input', e => { $('subName').textContent = e.target.value || ' '; });
+    $('inpStatus').addEventListener('input', e => { $('status').textContent = e.target.value || ' '; });
+    $('inpQR').addEventListener('input', e => setQR(e.target.value || ''));
+    $('inpInfo').addEventListener('input', e => {
+      const list = $('infoList');
+      list.innerHTML = '';
+      (e.target.value.split('\n')).forEach(line => {
+        if (!line.trim()) return;
+        const div = document.createElement('div');
+        div.className = 'info';
+        div.textContent = line;
+        list.appendChild(div);
+      });
+    });
+
+    // 사진/로고 로컬 파일 미리보기 (업로드 없음)
+    function fileToDataURL(file, cb) {
+      const reader = new FileReader();
+      reader.onload = () => cb(reader.result);
+      reader.readAsDataURL(file);
+    }
+    $('inpPhoto').addEventListener('change', e => {
+      const f = e.target.files?.[0];
+      if (f) fileToDataURL(f, (url) => { $('profile-photo').src = url; });
+    });
+    $('inpLogo').addEventListener('change', e => {
+      const f = e.target.files?.[0];
+      if (f) fileToDataURL(f, (url) => { document.querySelector('.logo').src = url; });
+    });
   </script>
 </body>
 </html>
